@@ -20,12 +20,12 @@ EOF
 
 
 resource "aws_iam_role_policy_attachment" "apigateway-cloudwatchlogs" {
-  role = "${aws_iam_role.iam_for_apigateway_idp.name}"
+  role       = aws_iam_role.iam_for_apigateway_idp.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
 resource "aws_api_gateway_account" "eu-west-1" {
-  cloudwatch_role_arn = "${aws_iam_role.iam_for_apigateway_idp.arn}"
+  cloudwatch_role_arn = aws_iam_role.iam_for_apigateway_idp.arn
 }
 
 resource "aws_api_gateway_rest_api" "sftp-idp-secrets" {
@@ -37,40 +37,40 @@ resource "aws_api_gateway_rest_api" "sftp-idp-secrets" {
 }
 
 resource "aws_api_gateway_resource" "sftp-idp-secrets-resource-config" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  parent_id   = "${aws_api_gateway_resource.sftp-idp-secrets-resource-username.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  parent_id   = aws_api_gateway_resource.sftp-idp-secrets-resource-username.id
   path_part   = "config"
 }
 
 resource "aws_api_gateway_resource" "sftp-idp-secrets-resource-username" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  parent_id   = "${aws_api_gateway_resource.sftp-idp-secrets-resource-users.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  parent_id   = aws_api_gateway_resource.sftp-idp-secrets-resource-users.id
   path_part   = "{username}"
 }
 
 resource "aws_api_gateway_resource" "sftp-idp-secrets-resource-users" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  parent_id   = "${aws_api_gateway_resource.sftp-idp-secrets-resource-serverid.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  parent_id   = aws_api_gateway_resource.sftp-idp-secrets-resource-serverid.id
   path_part   = "users"
 }
 
 resource "aws_api_gateway_resource" "sftp-idp-secrets-resource-serverid" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  parent_id   = "${aws_api_gateway_resource.sftp-idp-secrets-resource-servers.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  parent_id   = aws_api_gateway_resource.sftp-idp-secrets-resource-servers.id
   path_part   = "{serverId}"
 }
 
 resource "aws_api_gateway_resource" "sftp-idp-secrets-resource-servers" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  parent_id   = "${aws_api_gateway_rest_api.sftp-idp-secrets.root_resource_id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  parent_id   = aws_api_gateway_rest_api.sftp-idp-secrets.root_resource_id
   path_part   = "servers"
 }
 
 
 
 resource "aws_api_gateway_method" "sftp-idp-secrets-method" {
-  rest_api_id   = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  resource_id   = "${aws_api_gateway_resource.sftp-idp-secrets-resource-config.id}"
+  rest_api_id   = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  resource_id   = aws_api_gateway_resource.sftp-idp-secrets-resource-config.id
   http_method   = "GET"
   authorization = "AWS_IAM"
   request_parameters = {
@@ -79,13 +79,13 @@ resource "aws_api_gateway_method" "sftp-idp-secrets-method" {
 }
 
 resource "aws_api_gateway_integration" "sftp-idp-secrets-integration" {
-  rest_api_id          = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  resource_id          = "${aws_api_gateway_resource.sftp-idp-secrets-resource-config.id}"
-  http_method = "GET"
-  integration_http_method          = "POST"
-  type                 = "AWS"
-  uri                     = "${aws_lambda_function.sftp-idp.invoke_arn}"
-  depends_on = ["null_resource.method-delay"]
+  rest_api_id             = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  resource_id             = aws_api_gateway_resource.sftp-idp-secrets-resource-config.id
+  http_method             = "GET"
+  integration_http_method = "POST"
+  type                    = "AWS"
+  uri                     = aws_lambda_function.sftp-idp.invoke_arn
+  depends_on              = ["null_resource.method-delay"]
 
 
   # Transforms the incoming XML request to JSON
@@ -101,8 +101,8 @@ EOF
 }
 
 resource "aws_api_gateway_method_response" "sftp-idp-secrets-response_200" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  resource_id = "${aws_api_gateway_resource.sftp-idp-secrets-resource-config.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  resource_id = aws_api_gateway_resource.sftp-idp-secrets-resource-config.id
   http_method = "GET"
   status_code = "200"
   response_models = {
@@ -112,15 +112,15 @@ resource "aws_api_gateway_method_response" "sftp-idp-secrets-response_200" {
 }
 
 resource "aws_api_gateway_integration_response" "sftp-idp-secrets-method-IntegrationResponse" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  resource_id = "${aws_api_gateway_resource.sftp-idp-secrets-resource-config.id}"
-  http_method = "${aws_api_gateway_method.sftp-idp-secrets-method.http_method}"
-  status_code = "${aws_api_gateway_method_response.sftp-idp-secrets-response_200.status_code}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  resource_id = aws_api_gateway_resource.sftp-idp-secrets-resource-config.id
+  http_method = aws_api_gateway_method.sftp-idp-secrets-method.http_method
+  status_code = aws_api_gateway_method_response.sftp-idp-secrets-response_200.status_code
   //depends_on = ["null_resource.method-delay"]
 }
 
 resource "aws_api_gateway_model" "sftp-idp-secrets-model" {
-  rest_api_id  = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
+  rest_api_id  = aws_api_gateway_rest_api.sftp-idp-secrets.id
   name         = "UserConfigResponseModel"
   description  = "API response for GetUserConfig"
   content_type = "application/json"
@@ -143,15 +143,15 @@ EOF
 resource "aws_lambda_permission" "allow_apigateway" {
   statement_id  = "AllowExecutionFromApigateway"
   action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.sftp-idp.function_name}"
+  function_name = aws_lambda_function.sftp-idp.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "${aws_api_gateway_rest_api.sftp-idp-secrets.execution_arn}/*/*/*"
+  source_arn    = "${aws_api_gateway_rest_api.sftp-idp-secrets.execution_arn}/*/*/*"
 }
 
 resource "aws_api_gateway_deployment" "prod" {
-  rest_api_id = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
+  rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
   stage_name  = ""
-  depends_on = ["aws_api_gateway_integration.sftp-idp-secrets-integration"]
+  depends_on  = ["aws_api_gateway_integration.sftp-idp-secrets-integration"]
   variables = {
     deployed_at = "${timestamp()}"
   }
@@ -163,8 +163,8 @@ resource "aws_api_gateway_deployment" "prod" {
 
 resource "aws_api_gateway_stage" "prod" {
   stage_name    = "prod"
-  rest_api_id   = "${aws_api_gateway_rest_api.sftp-idp-secrets.id}"
-  deployment_id = "${aws_api_gateway_deployment.prod.id}"
+  rest_api_id   = aws_api_gateway_rest_api.sftp-idp-secrets.id
+  deployment_id = aws_api_gateway_deployment.prod.id
 }
 
 // introduce delay to let thinsg settle down to fix 404 issue creating some resources

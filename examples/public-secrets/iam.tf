@@ -19,7 +19,7 @@ EOF
 
 resource "aws_iam_role_policy" "foo" {
   name = "transfer-user-iam-policy"
-  role = "${aws_iam_role.foo.id}"
+  role = aws_iam_role.foo.id
 
   policy = <<POLICY
 {
