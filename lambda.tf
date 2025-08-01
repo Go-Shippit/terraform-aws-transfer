@@ -7,7 +7,7 @@ resource "aws_lambda_function" "sftp-idp" {
   runtime          = "python3.9"
   environment {
     variables = {
-      "${var.creds_store == "dynamo" ? "dynamo_table_name" : "SecretsManagerRegion"}" = "${var.creds_store == "dynamo" ? aws_dynamodb_table.authentication.name : data.aws_region.current.name}"
+      "${var.creds_store == "dynamo" ? "dynamo_table_name" : "SecretsManagerRegion"}" = "${var.creds_store == "dynamo" ? aws_dynamodb_table.authentication[0].name : data.aws_region.current.name}"
     }
   }
 }
@@ -56,7 +56,7 @@ resource "aws_iam_policy" "sftp-idp" {
         {
             "Effect": "Allow",
             "Action": "dynamodb:GetItem",
-            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.authentication.name}"
+            "Resource": "arn:aws:dynamodb:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.authentication[0].name}"
         },
         {
             "Effect": "Allow",
