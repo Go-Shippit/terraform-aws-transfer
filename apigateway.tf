@@ -85,7 +85,7 @@ resource "aws_api_gateway_integration" "sftp-idp-secrets-integration" {
   integration_http_method = "POST"
   type                    = "AWS"
   uri                     = aws_lambda_function.sftp-idp.invoke_arn
-  depends_on              = ["null_resource.method-delay"]
+  depends_on              = [null_resource.method-delay]
 
 
   # Transforms the incoming XML request to JSON
@@ -108,7 +108,7 @@ resource "aws_api_gateway_method_response" "sftp-idp-secrets-response_200" {
   response_models = {
     "application/json" = "${aws_api_gateway_model.sftp-idp-secrets-model.name}"
   }
-  depends_on = ["null_resource.method-delay"]
+  depends_on = [null_resource.method-delay]
 }
 
 resource "aws_api_gateway_integration_response" "sftp-idp-secrets-method-IntegrationResponse" {
@@ -116,7 +116,6 @@ resource "aws_api_gateway_integration_response" "sftp-idp-secrets-method-Integra
   resource_id = aws_api_gateway_resource.sftp-idp-secrets-resource-config.id
   http_method = aws_api_gateway_method.sftp-idp-secrets-method.http_method
   status_code = aws_api_gateway_method_response.sftp-idp-secrets-response_200.status_code
-  //depends_on = ["null_resource.method-delay"]
 }
 
 resource "aws_api_gateway_model" "sftp-idp-secrets-model" {
@@ -176,4 +175,3 @@ resource "null_resource" "method-delay" {
     resource_id = "${aws_api_gateway_resource.sftp-idp-secrets-resource-config.id}"
   }
 }
-
