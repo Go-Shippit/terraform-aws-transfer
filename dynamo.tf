@@ -1,4 +1,6 @@
 resource "aws_dynamodb_table" "authentication" {
+  count = var.creds_store == "dynamo" ? 1 : 0
+
   name                        = var.dynamo_table_name
   billing_mode                = "PROVISIONED"
   deletion_protection_enabled = true
