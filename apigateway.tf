@@ -149,7 +149,7 @@ resource "aws_lambda_permission" "allow_apigateway" {
 
 resource "aws_api_gateway_deployment" "prod" {
   rest_api_id = aws_api_gateway_rest_api.sftp-idp-secrets.id
-  depends_on  = ["aws_api_gateway_integration.sftp-idp-secrets-integration"]
+  depends_on  = [aws_api_gateway_integration.sftp-idp-secrets-integration]
   variables = {
     deployed_at = "${timestamp()}"
   }
